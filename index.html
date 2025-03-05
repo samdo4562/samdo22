@@ -1,0 +1,177 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>오늘 뭐 먹지?</title>
+    <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@400;700&display=swap" rel="stylesheet">
+    <style>
+        body {
+            font-family: 'Noto Sans KR', sans-serif;
+            text-align: center;
+            margin: 20px;
+            background-color: #f9f9f9;
+            color: #333;
+        }
+        .nav-menu {
+            display: flex;
+            justify-content: center;
+            gap: 15px;
+            margin-bottom: 20px;
+        }
+        .nav-menu a {
+            padding: 10px 15px;
+            background-color: #007aff;
+            color: white;
+            text-decoration: none;
+            border-radius: 5px;
+            transition: 0.3s;
+        }
+        .nav-menu a:hover {
+            background-color: #0056b3;
+            transform: scale(1.05);
+        }
+        .grid-container {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 20px;
+            max-width: 1200px;
+            margin: auto;
+        }
+        .container {
+            padding: 15px;
+            border: 1px solid #ddd;
+            border-radius: 10px;
+            box-shadow: 2px 2px 10px rgba(0, 0, 0, 0.1);
+            background-color: white;
+        }
+        img {
+            width: 50%;
+            border-radius: 10px;
+        }
+        .info {
+            margin-top: 5px;
+        }
+        .info h2 {
+            margin-bottom: 0px; /* 카페명과 주소 사이 여백 없앰 */
+        }
+        .info .address {
+            font-size: 0.9rem;
+            color: #666;
+            margin-top: 0px; /* 주소 위 여백 없앰 */
+        }
+        .map-link {
+            display: inline-block;
+            margin-top: 10px;
+            padding: 8px 12px;
+            background-color: #007aff;
+            color: white;
+            text-decoration: none;
+            border-radius: 5px;
+            transition: 0.3s ease;
+            font-size: 0.9rem;
+        }
+        .map-link:hover {
+            background-color: #0056b3;
+            transform: scale(1.05);
+        }
+        @media (max-width: 900px) {
+            .grid-container {
+                grid-template-columns: repeat(2, 1fr);
+            }
+        }
+        @media (max-width: 600px) {
+            .grid-container {
+                grid-template-columns: repeat(1, 1fr);
+            }
+            .nav-menu {
+                flex-direction: column;
+                align-items: center;
+            }
+        }
+    </style>
+</head>
+<body>
+
+    <h1>오늘 뭐 먹지?</h1>
+
+    <div class="nav-menu">
+        <a href="#lunch">밥心</a>
+        <a href="#dinner">술때려</a>
+        <a href="#cafe">카페테리아</a>
+        <a href="#dessert">서양식</a>
+        <a href="#waiting">빵지순례</a>
+    </div>
+
+    <h2 id="cafe">☕ 카페 맛집 추천 (6곳)</h2>
+    <div class="grid-container">
+        <!-- 카페 1 -->
+        <div class="container">
+            <img src="cafe1.jpg" alt="카페블루">
+            <div class="info">
+                <h2>카페블루</h2>
+                <p>송도에서 가장 핫한 루프탑 카페!</p>
+                <a class="map-link" href="https://map.naver.com/p/search/카페블루" target="_blank">네이버 지도</a>
+                <a class="map-link" href="https://map.kakao.com/?q=카페블루" target="_blank">카카오맵</a>
+            </div>
+        </div>
+
+        <!-- 카페 2 -->
+        <div class="container">
+            <img src="cafe2.jpg" alt="고미미">
+            <div class="info">
+                <h2>고미미</h2>
+                <p class="address">(제주시 북성로 67)</p>
+                <p>귀여운 디자인의 맛있는 마카롱</p>
+                <a class="map-link" href="https://map.naver.com/p/search/제주시 고미미" target="_blank">네이버 지도</a>
+                <a class="map-link" href="https://map.kakao.com/?q=제주시 고미미" target="_blank">카카오맵</a>
+            </div>
+        </div>
+
+        <!-- 카페 3 -->
+        <div class="container">
+            <img src="cafe3.jpg" alt="테라로사">
+            <div class="info">
+                <h2>테라로사</h2>
+                <p>수제 원두로 만든 깊은 맛의 커피!</p>
+                <a class="map-link" href="https://map.naver.com/p/search/테라로사" target="_blank">네이버 지도</a>
+                <a class="map-link" href="https://map.kakao.com/?q=테라로사" target="_blank">카카오맵</a>
+            </div>
+        </div>
+
+        <!-- 카페 4 -->
+        <div class="container">
+            <img src="cafe4.jpg" alt="빈브라운">
+            <div class="info">
+                <h2>빈브라운</h2>
+                <p>핸드드립 커피가 일품인 아늑한 카페!</p>
+                <a class="map-link" href="https://map.naver.com/p/search/빈브라운" target="_blank">네이버 지도</a>
+                <a class="map-link" href="https://map.kakao.com/?q=빈브라운" target="_blank">카카오맵</a>
+            </div>
+        </div>
+
+        <!-- 카페 5 -->
+        <div class="container">
+            <img src="cafe5.jpg" alt="노을카페">
+            <div class="info">
+                <h2>노을카페</h2>
+                <p>바다 전망이 멋진 힐링 공간!</p>
+                <a class="map-link" href="https://map.naver.com/p/search/노을카페" target="_blank">네이버 지도</a>
+                <a class="map-link" href="https://map.kakao.com/?q=노을카페" target="_blank">카카오맵</a>
+            </div>
+        </div>
+
+        <!-- 카페 6 -->
+        <div class="container">
+            <img src="cafe6.jpg" alt="모카스토리">
+            <div class="info">
+                <h2>모카스토리</h2>
+                <p>진한 모카와 수제 디저트가 인기!</p>
+                <a class="map-link" href="https://map.naver.com/p/search/모카스토리" target="_blank">네이버 지도</a>
+                <a class="map-link" href="https://map.kakao.com/?q=모카스토리" target="_blank">카카오맵</a>
+            </div>
+        </div>
+    </div>
+
+</body>
+</html>
