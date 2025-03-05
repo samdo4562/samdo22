@@ -14,13 +14,13 @@
             color: #333;
         }
         
-        /* 메뉴 스타일 */
+         /* 메뉴 스타일 */
         .nav-menu {
             display: flex;
             justify-content: center;
             gap: 15px;
             margin-bottom: 20px;
-            flex-wrap: wrap;
+            flex-wrap: wrap; /* 줄 바꿈 가능하도록 설정 */
             padding: 10px;
         }
         .nav-menu a {
@@ -37,14 +37,19 @@
             transform: scale(1.05);
         }
 
-        /* 모바일에서 가로 스크롤 가능하게 */
+        /* 모바일에서 메뉴를 2줄로 정렬 */
         @media (max-width: 600px) {
             .nav-menu {
-                overflow-x: auto;
-                flex-wrap: nowrap;
-                justify-content: flex-start;
-                white-space: nowrap;
-                padding: 5px;
+                display: flex;
+                justify-content: center;
+                flex-wrap: wrap; /* 여러 줄로 배치 가능 */
+                gap: 8px;
+            }
+            .nav-menu a {
+                font-size: 0.9rem;
+                padding: 10px 14px;
+                flex: 1 1 45%; /* 한 줄에 2개씩 정렬 */
+                text-align: center;
             }
         }
 
