@@ -13,24 +13,42 @@
             background-color: #f9f9f9;
             color: #333;
         }
+        
+        /* 메뉴 스타일 */
         .nav-menu {
             display: flex;
             justify-content: center;
             gap: 15px;
             margin-bottom: 20px;
+            flex-wrap: wrap;
+            padding: 10px;
         }
         .nav-menu a {
-            padding: 10px 15px;
+            padding: 12px 18px;
             background-color: #007aff;
             color: white;
             text-decoration: none;
             border-radius: 5px;
             transition: 0.3s;
+            white-space: nowrap;
         }
         .nav-menu a:hover {
             background-color: #0056b3;
             transform: scale(1.05);
         }
+
+        /* 모바일에서 가로 스크롤 가능하게 */
+        @media (max-width: 600px) {
+            .nav-menu {
+                overflow-x: auto;
+                flex-wrap: nowrap;
+                justify-content: flex-start;
+                white-space: nowrap;
+                padding: 5px;
+            }
+        }
+
+        /* 그리드 스타일 */
         .grid-container {
             display: grid;
             grid-template-columns: repeat(3, 1fr);
@@ -53,12 +71,12 @@
             margin-top: 5px;
         }
         .info h2 {
-            margin-bottom: 0px; /* 카페명과 주소 사이 여백 없앰 */
+            margin-bottom: 0px;
         }
         .info .address {
             font-size: 0.9rem;
             color: #666;
-            margin-top: 0px; /* 주소 위 여백 없앰 */
+            margin-top: 0px;
         }
         .map-link {
             display: inline-block;
@@ -75,6 +93,8 @@
             background-color: #0056b3;
             transform: scale(1.05);
         }
+
+        /* 반응형: 태블릿 & 모바일 */
         @media (max-width: 900px) {
             .grid-container {
                 grid-template-columns: repeat(2, 1fr);
@@ -83,10 +103,6 @@
         @media (max-width: 600px) {
             .grid-container {
                 grid-template-columns: repeat(1, 1fr);
-            }
-            .nav-menu {
-                flex-direction: column;
-                align-items: center;
             }
         }
     </style>
@@ -111,8 +127,8 @@
             <div class="info">
                 <h2>카페블루</h2>
                 <p>송도에서 가장 핫한 루프탑 카페!</p>
-                <a class="map-link" href="https://map.naver.com/p/search/카페블루" target="_blank">네이버 지도</a>
-                <a class="map-link" href="https://map.kakao.com/?q=카페블루" target="_blank">카카오맵</a>
+                <a class="map-link" href="#">네이버 지도</a>
+                <a class="map-link" href="#">카카오맵</a>
             </div>
         </div>
 
@@ -123,8 +139,8 @@
                 <h2>고미미</h2>
                 <p class="address">(제주시 북성로 67)</p>
                 <p>귀여운 디자인의 맛있는 마카롱</p>
-                <a class="map-link" href="https://map.naver.com/p/search/제주시 고미미" target="_blank">네이버 지도</a>
-                <a class="map-link" href="https://map.kakao.com/?q=제주시 고미미" target="_blank">카카오맵</a>
+                <a class="map-link" href="#">네이버 지도</a>
+                <a class="map-link" href="#">카카오맵</a>
             </div>
         </div>
 
@@ -134,8 +150,8 @@
             <div class="info">
                 <h2>테라로사</h2>
                 <p>수제 원두로 만든 깊은 맛의 커피!</p>
-                <a class="map-link" href="https://map.naver.com/p/search/테라로사" target="_blank">네이버 지도</a>
-                <a class="map-link" href="https://map.kakao.com/?q=테라로사" target="_blank">카카오맵</a>
+                <a class="map-link" href="#">네이버 지도</a>
+                <a class="map-link" href="#">카카오맵</a>
             </div>
         </div>
 
@@ -145,8 +161,8 @@
             <div class="info">
                 <h2>빈브라운</h2>
                 <p>핸드드립 커피가 일품인 아늑한 카페!</p>
-                <a class="map-link" href="https://map.naver.com/p/search/빈브라운" target="_blank">네이버 지도</a>
-                <a class="map-link" href="https://map.kakao.com/?q=빈브라운" target="_blank">카카오맵</a>
+                <a class="map-link" href="#">네이버 지도</a>
+                <a class="map-link" href="#">카카오맵</a>
             </div>
         </div>
 
@@ -156,8 +172,8 @@
             <div class="info">
                 <h2>노을카페</h2>
                 <p>바다 전망이 멋진 힐링 공간!</p>
-                <a class="map-link" href="https://map.naver.com/p/search/노을카페" target="_blank">네이버 지도</a>
-                <a class="map-link" href="https://map.kakao.com/?q=노을카페" target="_blank">카카오맵</a>
+                <a class="map-link" href="#">네이버 지도</a>
+                <a class="map-link" href="#">카카오맵</a>
             </div>
         </div>
 
@@ -167,11 +183,14 @@
             <div class="info">
                 <h2>모카스토리</h2>
                 <p>진한 모카와 수제 디저트가 인기!</p>
-                <a class="map-link" href="https://map.naver.com/p/search/모카스토리" target="_blank">네이버 지도</a>
-                <a class="map-link" href="https://map.kakao.com/?q=모카스토리" target="_blank">카카오맵</a>
+                <a class="map-link" href="#">네이버 지도</a>
+                <a class="map-link" href="#">카카오맵</a>
             </div>
         </div>
     </div>
+
+</body>
+</html>
 
 </body>
 </html>
