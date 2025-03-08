@@ -80,10 +80,18 @@
       }
     }
     @media (max-width: 600px) {
-      .grid-container {
-        grid-template-columns: repeat(3, 1fr);
-      }
-    }
+  .grid-container {
+    grid-template-columns: repeat(2, 1fr);
+  }
+  .container {
+    padding: 10px; /* 패딩 줄이기 */
+    font-size: 0.9rem; /* 폰트 크기 조정 */
+  }
+  .container img {
+    width: 100%;
+    max-width: 200px; /* 이미지 최대 너비 줄이기 */
+  }
+}
   </style>
 </head>
 <body>
