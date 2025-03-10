@@ -708,7 +708,7 @@
       showCategory('lunch', '🍚 한식 맛집 추천'); // 기본값을 "밥심"으로 설정
     };
 
-    // 모바일에서 네이버지도 링크 클릭 시 네이버맵 앱 실행 후, 앱 종료 시 초기 화면으로 돌아가도록 처리
+    // 모바일에서 네이버지도 링크 클릭 시 네이버맵 앱 실행 후, 앱 종료 시 초기 화면으로 돌아가도록 처리 (window.onblur/onfocus 방식)
     document.addEventListener('DOMContentLoaded', function(){
        var naverLinks = document.querySelectorAll('a[href^="https://map.naver.com/"]');
        naverLinks.forEach(function(link) {
@@ -717,20 +717,36 @@
                    e.preventDefault();
                    var url = new URL(link.href);
                    var query = url.searchParams.get('query') || '';
-                   // 네이버맵 앱 실행 시도 (nmap:// 스킴 사용)
-                   window.location.href = 'nmap://search?query=' + encodeURIComponent(query);
-                   var fallbackTimeout = setTimeout(function(){
-                       window.location.href = 'https://m.map.naver.com/search2/search.naver?query=' + encodeURIComponent(query);
-                   }, 1500);
-                   var visibilityHandler = function() {
-                       if (document.visibilityState === 'visible') {
-                           clearTimeout(fallbackTimeout);
-                           // 앱 연결 종료 후 초기 화면(현재 페이지 기본 경로)으로 이동
-                           window.location.href = window.location.pathname;
-                           document.removeEventListener('visibilitychange', visibilityHandler);
-                       }
+                   
+                   var hasBlurred = false;
+                   var fallbackTimeout;
+
+                   // window.onblur: 사용자가 앱으로 전환되었음을 감지
+                   window.onblur = function() {
+                      hasBlurred = true;
+                      clearTimeout(fallbackTimeout);
                    };
-                   document.addEventListener('visibilitychange', visibilityHandler);
+
+                   // window.onfocus: 앱에서 돌아왔을 때 실행 (초기화면으로)
+                   window.onfocus = function() {
+                      if (hasBlurred) {
+                         // 앱에서 돌아왔으므로 초기 페이지로 강제 이동
+                         window.location.href = window.location.pathname;
+                      }
+                      // 이벤트 핸들러는 한 번만 실행되도록
+                      window.onblur = null;
+                      window.onfocus = null;
+                   };
+
+                   // fallback: 1.5초 후에도 blur가 발생하지 않으면 모바일웹 네이버지도로 이동
+                   fallbackTimeout = setTimeout(function(){
+                       if (!hasBlurred) {
+                           window.location.href = 'https://m.map.naver.com/search2/search.naver?query=' + encodeURIComponent(query);
+                       }
+                   }, 1500);
+
+                   // 네이버맵 앱 실행 시도
+                   window.location.href = 'nmap://search?query=' + encodeURIComponent(query);
                }
            });
        });
