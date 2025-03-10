@@ -708,7 +708,7 @@
       showCategory('lunch', '🍚 한식 맛집 추천'); // 기본값을 "밥심"으로 설정
     };
 
-    // 추가: 모바일에서 네이버지도 링크 클릭 시 네이버맵 앱으로 열기
+    // 모바일에서 네이버지도 링크 클릭 시 네이버맵 앱 실행 후, 앱 종료 시 초기 화면으로 돌아가도록 처리
     document.addEventListener('DOMContentLoaded', function(){
        var naverLinks = document.querySelectorAll('a[href^="https://map.naver.com/"]');
        naverLinks.forEach(function(link) {
@@ -717,12 +717,20 @@
                    e.preventDefault();
                    var url = new URL(link.href);
                    var query = url.searchParams.get('query') || '';
-                   // 네이버맵 앱으로 이동 시도 (nmap:// 스킴 사용)
+                   // 네이버맵 앱 실행 시도 (nmap:// 스킴 사용)
                    window.location.href = 'nmap://search?query=' + encodeURIComponent(query);
-                   // 앱이 없으면 1.5초 후 모바일 웹 네이버지도로 이동
-                   setTimeout(function(){
+                   var fallbackTimeout = setTimeout(function(){
                        window.location.href = 'https://m.map.naver.com/search2/search.naver?query=' + encodeURIComponent(query);
                    }, 1500);
+                   var visibilityHandler = function() {
+                       if (document.visibilityState === 'visible') {
+                           clearTimeout(fallbackTimeout);
+                           // 앱 연결 종료 후 초기 화면(현재 페이지 기본 경로)으로 이동
+                           window.location.href = window.location.pathname;
+                           document.removeEventListener('visibilitychange', visibilityHandler);
+                       }
+                   };
+                   document.addEventListener('visibilitychange', visibilityHandler);
                }
            });
        });
@@ -731,4 +739,3 @@
 
 </body>
 </html>
-
