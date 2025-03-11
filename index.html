@@ -736,17 +736,19 @@
                     "X-Naver-Client-Id": clientId,
                     "X-Naver-Client-Secret": clientSecret
                 }
-            });
-            const data = await response.json();
-            if (data.items.length > 0 && data.items[0].image) {
-                return data.items[0].image;
-            } else {
-                return "placeholder.jpg";
             }
-        } catch (error) {
-            console.error("네이버 API 요청 오류:", error);
+        });
+        const data = await response.json();
+        console.log("API 응답 데이터:", data);  // 응답 데이터 확인
+        if (data.items.length > 0 && data.items[0].image) {
+            return data.items[0].image;
+        } else {
             return "placeholder.jpg";
         }
+    } catch (error) {
+        console.error("네이버 API 요청 오류:", error);
+        return "placeholder.jpg";
+    }
     }
 
     async function updatePlaceImages() {
