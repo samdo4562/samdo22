@@ -712,7 +712,7 @@
       showCategory('lunch', '🍚 한식 맛집 추천'); // 기본값을 "밥심"으로 설정
     };
 
-    // 모바일에서 네이버지도 링크 클릭 시 네이버맵 앱 실행 후, 앱 종료 시 초기 화면으로 돌아가도록 처리 (window.onblur/onfocus 방식)
+    // 모바일에서 네이버지도 링크 클릭 시 네이버맵 앱 실행 후, 앱으로 돌아왔을 때 현재 카테고리 유지
     document.addEventListener('DOMContentLoaded', function(){
        var naverLinks = document.querySelectorAll('a[href^="https://map.naver.com/"]');
        naverLinks.forEach(function(link) {
@@ -725,19 +725,17 @@
                    var hasBlurred = false;
                    var fallbackTimeout;
 
-                   // window.onblur: 사용자가 앱으로 전환되었음을 감지
+                   // 사용자가 앱으로 전환되었음을 감지
                    window.onblur = function() {
                       hasBlurred = true;
                       clearTimeout(fallbackTimeout);
                    };
 
-                   // window.onfocus: 앱에서 돌아왔을 때 실행 (초기화면으로)
+                   // 앱에서 돌아왔을 때 현재 카테고리 재출력
                    window.onfocus = function() {
                       if (hasBlurred) {
-                         // 앱에서 돌아왔으므로 초기 페이지로 강제 이동
-                         window.location.href = window.location.pathname;
+                         showCategory(currentCategory, currentTitle);
                       }
-                      // 이벤트 핸들러는 한 번만 실행되도록
                       window.onblur = null;
                       window.onfocus = null;
                    };
