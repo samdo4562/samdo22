@@ -599,7 +599,7 @@
       if (e.key === "Escape" && modalBackdrop.classList.contains("show")) closeModal();
     });
 
-    // 모달 내부 "카드로 이동"
+    // 모달 내부 "처음으로"
     document.getElementById("modalActions").addEventListener("click", (e) => {
       const btn = e.target.closest("button[data-scroll]");
       if (!btn) return;
@@ -670,4 +670,5 @@
   </script>
 </body>
 </html>
+
 
