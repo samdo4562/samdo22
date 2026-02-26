@@ -1,727 +1,671 @@
 <!DOCTYPE html>
 <html lang="ko">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>오늘 뭐 먹지?</title>
   <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@400;700&display=swap" rel="stylesheet">
+
   <style>
-    body {
-      font-family: 'Noto Sans KR', sans-serif;
-      text-align: center;
+    :root{
+      --bg:#f9f9f9;
+      --text:#333;
+      --card:#fff;
+      --border:#ddd;
+      --shadow: 0 8px 24px rgba(0,0,0,.08);
+      --primary:#007aff;
+      --primary-dark:#0056b3;
+      --muted:#666;
+      --radius:12px;
+    }
+
+    *{ box-sizing:border-box; }
+    body{
+      font-family:'Noto Sans KR', sans-serif;
       margin: 20px;
-      background-color: #f9f9f9;
-      color: #333;
+      background: var(--bg);
+      color: var(--text);
+      text-align:center;
     }
-    .nav-menu {
-      display: flex;
-      justify-content: center;
-      gap: 15px;
-      margin-bottom: 20px;
-      flex-wrap: wrap;
-      padding: 10px;
-    }
-    .nav-menu a {
-      padding: 12px 18px;
-      background-color: #007aff;
-      color: white;
-      text-decoration: none;
-      border-radius: 5px;
-      transition: 0.3s;
-      white-space: nowrap;
-      cursor: pointer;
-    }
-    .nav-menu a:hover {
-      background-color: #0056b3;
-      transform: scale(1.05);
-    }
-    .grid-container {
-      display: none;
-      grid-template-columns: repeat(4, 1fr);
-      gap: 8px;
+
+    header{
       max-width: 1200px;
-      margin: auto;
+      margin: 0 auto 14px;
     }
-    .container {
-      padding: 8px;
-      border: 1px solid #ddd;
-      border-radius: 10px;
-      box-shadow: 2px 2px 10px rgba(0, 0, 0, 0.1);
-      background-color: white;
+
+    h1{
+      margin: 8px 0 14px;
+      letter-spacing: -0.02em;
     }
-    .container img {
-      width: 50%;
-      max-width: 200px;
+
+    .nav-menu{
+      display:flex;
+      justify-content:center;
+      gap: 12px;
+      flex-wrap:wrap;
+      padding: 10px;
+      margin-bottom: 12px;
+    }
+
+    /* 링크처럼 생긴 버튼 → 진짜 버튼 */
+    .nav-menu button{
+      padding: 12px 18px;
+      background: var(--primary);
+      color:#fff;
+      border:0;
       border-radius: 10px;
+      cursor:pointer;
+      transition: .2s ease;
+      white-space:nowrap;
+      font:inherit;
+      box-shadow: 0 6px 16px rgba(0,122,255,.18);
+    }
+    .nav-menu button:hover{
+      background: var(--primary-dark);
+      transform: translateY(-1px);
+    }
+    .nav-menu button.active{
+      background: var(--primary-dark);
+      outline: 3px solid rgba(0,0,0,.12);
+    }
+
+    .top-bar{
+      max-width: 1200px;
+      margin: 0 auto 10px;
+      display:flex;
+      align-items:center;
+      justify-content:space-between;
+      gap: 12px;
+      flex-wrap:wrap;
+    }
+
+    #category-title{
+      margin: 6px 0;
+      text-align:left;
+      font-size: 1.1rem;
+      color: var(--text);
+      letter-spacing: -0.01em;
+    }
+
+    .random-btn{
+      padding: 10px 14px;
+      border: 0;
+      border-radius: 10px;
+      background: #111;
+      color:#fff;
+      cursor:pointer;
+      font:inherit;
+      transition:.2s ease;
+      display:flex;
+      align-items:center;
+      gap: 8px;
+      box-shadow: 0 10px 24px rgba(0,0,0,.15);
+    }
+    .random-btn:hover{ transform: translateY(-1px); }
+
+    /* grid */
+    .grid-container{
+      max-width: 1200px;
+      margin: 0 auto;
+      display:grid;
+      grid-template-columns: repeat(4, 1fr);
+      gap: 10px;
+    }
+    .grid-container[hidden]{ display:none !important; }
+
+    @media (max-width: 900px){
+      .grid-container{ grid-template-columns: repeat(2, 1fr); }
+      #category-title{ text-align:center; }
+      .top-bar{ justify-content:center; }
+    }
+    @media (max-width: 600px){
+      .grid-container{ grid-template-columns: 1fr; }
+    }
+
+    .container{
+      padding: 14px 12px;
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      background: var(--card);
+      box-shadow: var(--shadow);
+      text-align:center;
+      position:relative;
+      overflow:hidden;
+    }
+
+    /* 이미지가 없을 때도 레이아웃 고정되도록 썸네일 영역 */
+    .thumb{
+      height: 120px;
+      border-radius: 12px;
+      background: linear-gradient(135deg, rgba(0,122,255,.12), rgba(0,0,0,.06));
+      display:flex;
+      align-items:center;
+      justify-content:center;
+      font-size: 34px;
       margin-bottom: 10px;
+      user-select:none;
     }
-    /* h2와 p 태그의 기본 마진을 줄임 */
-    h2, p {
-      margin: 5px 0;
-    }
-    .map-link {
-      display: inline-block;
+
+    h2, p{ margin: 6px 0; }
+    h2{ font-size: 1.05rem; letter-spacing:-0.02em; }
+    p{ color: var(--muted); font-size: .95rem; }
+
+    .map-links{
       margin-top: 10px;
+      display:flex;
+      justify-content:center;
+      gap: 8px;
+      flex-wrap:wrap;
+    }
+    .map-link{
+      display:inline-block;
       padding: 8px 12px;
-      background-color: #007aff;
-      color: white;
-      text-decoration: none;
-      border-radius: 5px;
-      transition: 0.3s ease;
-      font-size: 0.9rem;
+      border-radius: 10px;
+      background: var(--primary);
+      color:#fff;
+      text-decoration:none;
+      transition:.2s ease;
+      font-size:.9rem;
     }
-    .map-link:hover {
-      background-color: #0056b3;
-      transform: scale(1.05);
+    .map-link:hover{
+      background: var(--primary-dark);
+      transform: translateY(-1px);
     }
-    .map-links {
+
+    /* 랜덤으로 뽑힌 카드 강조 */
+    .picked{
+      outline: 4px solid rgba(0,122,255,.35);
+      box-shadow: 0 14px 34px rgba(0,122,255,.20);
+      transform: translateY(-2px);
+      transition: .25s ease;
+    }
+    .picked::after{
+      content:"오늘의 픽";
+      position:absolute;
+      top: 12px;
+      left: 12px;
+      background: rgba(0,0,0,.82);
+      color:#fff;
+      padding: 6px 10px;
+      border-radius: 999px;
+      font-size: .85rem;
+    }
+
+    /* 모달 */
+    .modal-backdrop{
+      position: fixed;
+      inset: 0;
+      background: rgba(0,0,0,.45);
+      display:none;
+      align-items:center;
+      justify-content:center;
+      padding: 18px;
+      z-index: 999;
+    }
+    .modal-backdrop.show{ display:flex; }
+
+    .modal{
+      width: min(520px, 100%);
+      background: #fff;
+      border-radius: 16px;
+      box-shadow: 0 20px 60px rgba(0,0,0,.25);
+      text-align:left;
+      overflow:hidden;
+    }
+    .modal header{
+      padding: 14px 16px 10px;
+      margin:0;
+      border-bottom: 1px solid #eee;
+      display:flex;
+      align-items:center;
+      justify-content:space-between;
+      gap: 10px;
+    }
+    .modal header h3{
+      margin:0;
+      font-size: 1.05rem;
+      letter-spacing:-0.02em;
+    }
+    .modal .close{
+      border:0;
+      background: transparent;
+      font-size: 20px;
+      cursor:pointer;
+      padding: 6px 8px;
+      border-radius: 10px;
+    }
+    .modal .close:hover{ background: rgba(0,0,0,.06); }
+
+    .modal .content{
+      padding: 14px 16px 16px;
+    }
+    .modal .place-name{
+      font-size: 1.25rem;
+      margin: 4px 0 6px;
+      font-weight: 700;
+    }
+    .modal .place-addr{
+      margin: 0 0 12px;
+      color: var(--muted);
+    }
+    .modal .actions{
+      display:flex;
+      flex-wrap:wrap;
+      gap: 10px;
       margin-top: 10px;
     }
-    @media (max-width: 900px) {
-      .grid-container {
-        grid-template-columns: repeat(2, 1fr);
-      }
+    .modal .actions a,
+    .modal .actions button{
+      border:0;
+      border-radius: 12px;
+      padding: 10px 12px;
+      font: inherit;
+      cursor:pointer;
+      text-decoration:none;
+      display:inline-flex;
+      align-items:center;
+      justify-content:center;
+      gap: 8px;
+      transition:.2s ease;
     }
-    @media (max-width: 600px) {
-      .grid-container {
-        grid-template-columns: repeat(1, 1fr);
-      }
+    .modal .actions a{
+      background: var(--primary);
+      color:#fff;
+    }
+    .modal .actions a:hover{
+      background: var(--primary-dark);
+      transform: translateY(-1px);
+    }
+    .modal .actions button{
+      background: rgba(0,0,0,.08);
+      color: #111;
+    }
+    .modal .actions button:hover{
+      background: rgba(0,0,0,.12);
+      transform: translateY(-1px);
+    }
+
+    /* 스크린리더용 */
+    .sr-only{
+      position:absolute;
+      width:1px;
+      height:1px;
+      padding:0;
+      margin:-1px;
+      overflow:hidden;
+      clip:rect(0,0,0,0);
+      white-space:nowrap;
+      border:0;
     }
   </style>
 </head>
+
 <body>
-  <h1>오늘 뭐 먹지?</h1>
-  <div class="nav-menu">
-    <!-- 각 카테고리 클릭 시 showCategory 함수 호출 -->
-    <a onclick="showCategory('lunch', '🍚 한식 맛집 추천')">밥심🍚</a>
-    <a onclick="showCategory('dinner', '🍺 술집 맛집 추천')">술때려🍺</a>
-    <a onclick="showCategory('dessert', '🌍 외국음식 맛집 추천')">미식로드🌍</a>
-    <a onclick="showCategory('waiting', '🍞 빵집 맛집 추천')">빵지순례🍞</a>
-    <a onclick="showCategory('cafe', '☕ 카페 맛집 추천')">감성한모금☕</a>
-  </div>
-  <h2 id="category-title">🍚 한식 맛집 추천 (10곳)</h2>
-  <!-- 🍚 밥심(한식) - lunch -->
-  <div id="lunch" class="grid-container">
-    <!-- 1 -->
-    <div class="container">
-      <img src="placeholder.jpg" alt="이미지">
-      <h2>한라돈까스</h2>
-      <p>(제주시 탑동로 27)</p>
-      <p></p>
-      <div class="map-links">
-        <a href="https://map.naver.com/?query=제주시 한라돈까스" class="map-link" target="_blank">네이버지도</a>
-        <a href="https://map.kakao.com/?q=제주시 한라돈까스" class="map-link" target="_blank">카카오맵</a>
-        <a href="https://www.google.com/maps/search/?api=1&query=제주시 한라돈까스" class="map-link" target="_blank">Google Maps</a>
-      </div>
+  <header>
+    <h1>오늘 뭐 먹지?</h1>
+
+    <nav class="nav-menu" aria-label="카테고리 메뉴">
+      <button type="button" data-category="lunch"   data-title="🍚 한식 맛집 추천">밥심🍚</button>
+      <button type="button" data-category="dinner"  data-title="🍺 술집 맛집 추천">술때려🍺</button>
+      <button type="button" data-category="dessert" data-title="🌍 외국음식 맛집 추천">미식로드🌍</button>
+      <button type="button" data-category="waiting" data-title="🍞 빵집 맛집 추천">빵지순례🍞</button>
+      <button type="button" data-category="cafe"    data-title="☕ 카페 맛집 추천">감성한모금☕</button>
+    </nav>
+
+    <div class="top-bar">
+      <h2 id="category-title" aria-live="polite"></h2>
+      <button class="random-btn" id="randomPickBtn" type="button" title="현재 카테고리에서 랜덤 1곳 뽑기">
+        🎲 오늘 뭐 먹지
+      </button>
     </div>
-    <!-- 2 -->
-    <div class="container">
-      <h2>미친부엌 바이 제주면소</h2>
-      <p>(제주시 중앙로2길 41)</p>
-      <p></p>
-      <div class="map-links">
-        <a href="https://map.naver.com/?query=제주시 미친부엌 바이 제주면소" class="map-link" target="_blank">네이버지도</a>
-        <a href="https://map.kakao.com/?q=제주시 미친부엌 바이 제주면소" class="map-link" target="_blank">카카오맵</a>
-        <a href="https://www.google.com/maps/search/?api=1&query=제주시 미친부엌 바이 제주면소" class="map-link" target="_blank">Google Maps</a>
-      </div>
-    </div>
-    <!-- 3 -->
-    <div class="container">
-      <h2>말고기연구소</h2>
-      <p>(제주시 북성로 43)</p>
-      <p></p>
-      <div class="map-links">
-        <a href="https://map.naver.com/?query=제주시 말고기연구소" class="map-link" target="_blank">네이버지도</a>
-        <a href="https://map.kakao.com/?q=제주시 말고기연구소" class="map-link" target="_blank">카카오맵</a>
-        <a href="https://www.google.com/maps/search/?api=1&query=제주시 말고기연구소" class="map-link" target="_blank">Google Maps</a>
-      </div>
-    </div>
-    <!-- 4 -->
-    <div class="container">
-      <h2>우도근고기</h2>
-      <p>(제주시 북성로 28)</p>
-      <p></p>
-      <div class="map-links">
-        <a href="https://map.naver.com/?query=제주시 우도근고기" class="map-link" target="_blank">네이버지도</a>
-        <a href="https://map.kakao.com/?q=제주시 우도근고기" class="map-link" target="_blank">카카오맵</a>
-        <a href="https://www.google.com/maps/search/?api=1&query=제주시 우도근고기" class="map-link" target="_blank">Google Maps</a>
-      </div>
-    </div>
-    <!-- 5 -->
-    <div class="container">
-      <h2>숲제주</h2>
-      <p>(제주시 무근성3길 9)</p>
-      <p></p>
-      <div class="map-links">
-        <a href="https://map.naver.com/?query=제주시 숲제주" class="map-link" target="_blank">네이버지도</a>
-        <a href="https://map.kakao.com/?q=제주시 숲제주" class="map-link" target="_blank">카카오맵</a>
-        <a href="https://www.google.com/maps/search/?api=1&query=제주시 숲제주" class="map-link" target="_blank">Google Maps</a>
-      </div>
-    </div>
-    <!-- 6 -->
-    <div class="container">
-      <h2>20년전통부대찌개</h2>
-      <p>(제주시 중앙로14길 35)</p>
-      <p></p>
-      <div class="map-links">
-        <a href="https://map.naver.com/?query=제주시 20년전통부대찌개" class="map-link" target="_blank">네이버지도</a>
-        <a href="https://map.kakao.com/?q=제주시 20년전통부대찌개" class="map-link" target="_blank">카카오맵</a>
-        <a href="https://www.google.com/maps/search/?api=1&query=제주시 20년전통부대찌개" class="map-link" target="_blank">Google Maps</a>
-      </div>
-    </div>
-    <!-- 7 -->
-    <div class="container">
-      <h2>제주에가면</h2>
-      <p>(제주시 탑동로 119)</p>
-      <p></p>
-      <div class="map-links">
-        <a href="https://map.naver.com/?query=제주시 제주에가면" class="map-link" target="_blank">네이버지도</a>
-        <a href="https://map.kakao.com/?q=제주시 제주에가면" class="map-link" target="_blank">카카오맵</a>
-        <a href="https://www.google.com/maps/search/?api=1&query=제주시 제주에가면" class="map-link" target="_blank">Google Maps</a>
-      </div>
-    </div>
-    <!-- 8 -->
-    <div class="container">
-      <h2>진이칼국수</h2>
-      <p>(제주시 남성로 154)</p>
-      <p></p>
-      <div class="map-links">
-        <a href="https://map.naver.com/?query=제주시 진이칼국수" class="map-link" target="_blank">네이버지도</a>
-        <a href="https://map.kakao.com/?q=제주시 진이칼국수" class="map-link" target="_blank">카카오맵</a>
-        <a href="https://www.google.com/maps/search/?api=1&query=제주시 진이칼국수" class="map-link" target="_blank">Google Maps</a>
-      </div>
-    </div>
-    <!-- 9 -->
-    <div class="container">
-      <h2>남문숯불바베큐&치킨 본점</h2>
-      <p>(제주시 중앙로 118-1)</p>
-      <p></p>
-      <div class="map-links">
-        <a href="https://map.naver.com/?query=제주시 남문숯불바베큐&치킨 본점" class="map-link" target="_blank">네이버지도</a>
-        <a href="https://map.kakao.com/?q=제주시 남문숯불바베큐&치킨 본점" class="map-link" target="_blank">카카오맵</a>
-        <a href="https://www.google.com/maps/search/?api=1&query=제주시 남문숯불바베큐&치킨 본점" class="map-link" target="_blank">Google Maps</a>
-      </div>
-    </div>
-    <!-- 10 -->
-    <div class="container">
-      <h2>모던그릴</h2>
-      <p>(제주시 전농로 73-1)</p>
-      <p></p>
-      <div class="map-links">
-        <a href="https://map.naver.com/?query=제주시 모던그릴" class="map-link" target="_blank">네이버지도</a>
-        <a href="https://map.kakao.com/?q=제주시 모던그릴" class="map-link" target="_blank">카카오맵</a>
-        <a href="https://www.google.com/maps/search/?api=1&query=제주시 모던그릴" class="map-link" target="_blank">Google Maps</a>
+  </header>
+
+  <!-- 카테고리별 그리드(내용은 JS가 생성) -->
+  <main>
+    <div id="lunch" class="grid-container" hidden></div>
+    <div id="dinner" class="grid-container" hidden></div>
+    <div id="dessert" class="grid-container" hidden></div>
+    <div id="waiting" class="grid-container" hidden></div>
+    <div id="cafe" class="grid-container" hidden></div>
+  </main>
+
+  <!-- 랜덤 픽 모달 -->
+  <div class="modal-backdrop" id="modalBackdrop" role="dialog" aria-modal="true" aria-labelledby="modalTitle">
+    <div class="modal">
+      <header>
+        <h3 id="modalTitle">오늘 뭐 먹지</h3>
+        <button type="button" class="close" id="modalClose" aria-label="닫기">✕</button>
+      </header>
+      <div class="content">
+        <div class="place-name" id="modalPlaceName"></div>
+        <div class="place-addr" id="modalPlaceAddr"></div>
+        <div class="actions" id="modalActions"></div>
+        <p class="sr-only" id="modalHint">ESC 키로 닫을 수 있습니다.</p>
       </div>
     </div>
   </div>
-  <!-- 🍺 술때려(술집) - dinner -->
-  <div id="dinner" class="grid-container">
-    <!-- 1 -->
-    <div class="container">
-      <h2>스타메노 스키야키</h2>
-      <p>(제주시 무근성 7길 17)</p>
-      <p></p>
-      <div class="map-links">
-        <a href="https://map.naver.com/?query=제주시 스타메노 스키야키" class="map-link" target="_blank">네이버지도</a>
-        <a href="https://map.kakao.com/?q=제주시 스타메노 스키야키" class="map-link" target="_blank">카카오맵</a>
-        <a href="https://www.google.com/maps/search/?api=1&query=제주시 스타메노 스키야키" class="map-link" target="_blank">Google Maps</a>
-      </div>
-    </div>
-    <!-- 2 -->
-    <div class="container">
-      <h2>단도리</h2>
-      <p>(제주시 전농로 77 1층)</p>
-      <p></p>
-      <div class="map-links">
-        <a href="https://map.naver.com/?query=제주시 단도리" class="map-link" target="_blank">네이버지도</a>
-        <a href="https://map.kakao.com/?q=제주시 단도리" class="map-link" target="_blank">카카오맵</a>
-        <a href="https://www.google.com/maps/search/?api=1&query=제주시 단도리" class="map-link" target="_blank">Google Maps</a>
-      </div>
-    </div>
-    <!-- 3 -->
-    <div class="container">
-      <h2>파라디소</h2>
-      <p>(제주시 전농로 75-1 2층)</p>
-      <p></p>
-      <div class="map-links">
-        <a href="https://map.naver.com/?query=제주시 파라디소" class="map-link" target="_blank">네이버지도</a>
-        <a href="https://map.kakao.com/?q=제주시 파라디소" class="map-link" target="_blank">카카오맵</a>
-        <a href="https://www.google.com/maps/search/?api=1&query=제주시 파라디소" class="map-link" target="_blank">Google Maps</a>
-      </div>
-    </div>
-    <!-- 4 -->
-    <div class="container">
-      <h2>산전수전</h2>
-      <p>(제주시 중앙로24길 20)</p>
-      <p></p>
-      <div class="map-links">
-        <a href="https://map.naver.com/?query=제주시 산전수전" class="map-link" target="_blank">네이버지도</a>
-        <a href="https://map.kakao.com/?q=제주시 산전수전" class="map-link" target="_blank">카카오맵</a>
-        <a href="https://www.google.com/maps/search/?api=1&query=제주시 산전수전" class="map-link" target="_blank">Google Maps</a>
-      </div>
-    </div>
-    <!-- 5 -->
-    <div class="container">
-      <h2>타인의취향</h2>
-      <p>(제주시 관덕로 16-1)</p>
-      <p></p>
-      <div class="map-links">
-        <a href="https://map.naver.com/?query=제주시 타인의취향" class="map-link" target="_blank">네이버지도</a>
-        <a href="https://map.kakao.com/?q=제주시 타인의취향" class="map-link" target="_blank">카카오맵</a>
-        <a href="https://www.google.com/maps/search/?api=1&query=제주시 타인의취향" class="map-link" target="_blank">Google Maps</a>
-      </div>
-    </div>
-    <!-- 6 -->
-    <div class="container">
-      <h2>태양상회</h2>
-      <p>(제주시 중앙로2길 31 1층)</p>
-      <p></p>
-      <div class="map-links">
-        <a href="https://map.naver.com/?query=제주시 태양상회" class="map-link" target="_blank">네이버지도</a>
-        <a href="https://map.kakao.com/?q=제주시 태양상회" class="map-link" target="_blank">카카오맵</a>
-        <a href="https://www.google.com/maps/search/?api=1&query=제주시 태양상회" class="map-link" target="_blank">Google Maps</a>
-      </div>
-    </div>
-    <!-- 7 -->
-    <div class="container">
-      <h2>뽀빠이</h2>
-      <p>(제주시 북성로 4)</p>
-      <p></p>
-      <div class="map-links">
-        <a href="https://map.naver.com/?query=제주시 뽀빠이" class="map-link" target="_blank">네이버지도</a>
-        <a href="https://map.kakao.com/?q=제주시 뽀빠이" class="map-link" target="_blank">카카오맵</a>
-        <a href="https://www.google.com/maps/search/?api=1&query=제주시 뽀빠이" class="map-link" target="_blank">Google Maps</a>
-      </div>
-    </div>
-    <!-- 8 -->
-    <div class="container">
-      <h2>자유의지2 제주혼술바</h2>
-      <p>(제주시 중앙로 8길 9 1층)</p>
-      <p></p>
-      <div class="map-links">
-        <a href="https://map.naver.com/?query=제주시 자유의지2 제주혼술바" class="map-link" target="_blank">네이버지도</a>
-        <a href="https://map.kakao.com/?q=제주시 자유의지2 제주혼술바" class="map-link" target="_blank">카카오맵</a>
-        <a href="https://www.google.com/maps/search/?api=1&query=제주시 자유의지2 제주혼술바" class="map-link" target="_blank">Google Maps</a>
-      </div>
-    </div>
-    <!-- 9 -->
-    <div class="container">
-      <h2>부가네얼큰이 본점</h2>
-      <p>(제주시 관덕로 15 1층)</p>
-      <p></p>
-      <div class="map-links">
-        <a href="https://map.naver.com/?query=제주시 부가네얼큰이 본점" class="map-link" target="_blank">네이버지도</a>
-        <a href="https://map.kakao.com/?q=제주시 부가네얼큰이 본점" class="map-link" target="_blank">카카오맵</a>
-        <a href="https://www.google.com/maps/search/?api=1&query=제주시 부가네얼큰이 본점" class="map-link" target="_blank">Google Maps</a>
-      </div>
-    </div>
-    <!-- 10 -->
-    <div class="container">
-      <h2>AMU아무</h2>
-      <p>(제주시 남성로 160)</p>
-      <p></p>
-      <div class="map-links">
-        <a href="https://map.naver.com/?query=제주시 AMU아무" class="map-link" target="_blank">네이버지도</a>
-        <a href="https://map.kakao.com/?q=제주시 AMU아무" class="map-link" target="_blank">카카오맵</a>
-        <a href="https://www.google.com/maps/search/?api=1&query=제주시 AMU아무" class="map-link" target="_blank">Google Maps</a>
-      </div>
-    </div>
-  </div>
-  <!-- 🌍 미식로드(외국음식) - dessert -->
-  <div id="dessert" class="grid-container">
-    <!-- 1 -->
-    <div class="container">
-      <h2>아살람레스토랑</h2>
-      <p>(제주시 중앙로2길 7)</p>
-      <p></p>
-      <div class="map-links">
-        <a href="https://map.naver.com/?query=제주시 아살람레스토랑" class="map-link" target="_blank">네이버지도</a>
-        <a href="https://map.kakao.com/?q=제주시 아살람레스토랑" class="map-link" target="_blank">카카오맵</a>
-        <a href="https://www.google.com/maps/search/?api=1&query=제주시 아살람레스토랑" class="map-link" target="_blank">Google Maps</a>
-      </div>
-    </div>
-    <!-- 2 -->
-    <div class="container">
-      <h2>김원꼬치점</h2>
-      <p>(제주시 중앙로 2길 7)</p>
-      <p></p>
-      <div class="map-links">
-        <a href="https://map.naver.com/?query=제주시 김원꼬치점" class="map-link" target="_blank">네이버지도</a>
-        <a href="https://map.kakao.com/?q=제주시 김원꼬치점" class="map-link" target="_blank">카카오맵</a>
-        <a href="https://www.google.com/maps/search/?api=1&query=제주시 김원꼬치점" class="map-link" target="_blank">Google Maps</a>
-      </div>
-    </div>
-    <!-- 3 -->
-    <div class="container">
-      <h2>도토리키친 본점</h2>
-      <p>(제주시 북성로 59 1층)</p>
-      <p></p>
-      <div class="map-links">
-        <a href="https://map.naver.com/?query=제주시 도토리키친 본점" class="map-link" target="_blank">네이버지도</a>
-        <a href="https://map.kakao.com/?q=제주시 도토리키친 본점" class="map-link" target="_blank">카카오맵</a>
-        <a href="https://www.google.com/maps/search/?api=1&query=제주시 도토리키친 본점" class="map-link" target="_blank">Google Maps</a>
-      </div>
-    </div>
-    <!-- 4 -->
-    <div class="container">
-      <h2>유메</h2>
-      <p>(제주시 무근성7길 23)</p>
-      <p></p>
-      <div class="map-links">
-        <a href="https://map.naver.com/?query=제주시 유메" class="map-link" target="_blank">네이버지도</a>
-        <a href="https://map.kakao.com/?q=제주시 유메" class="map-link" target="_blank">카카오맵</a>
-        <a href="https://www.google.com/maps/search/?api=1&query=제주시 유메" class="map-link" target="_blank">Google Maps</a>
-      </div>
-    </div>
-    <!-- 5 -->
-    <div class="container">
-      <h2>오랑우탄면사무소 제주공항점</h2>
-      <p>(제주시 관덕로6길 12)</p>
-      <p></p>
-      <div class="map-links">
-        <a href="https://map.naver.com/?query=제주시 오랑우탄면사무소 제주공항점" class="map-link" target="_blank">네이버지도</a>
-        <a href="https://map.kakao.com/?q=제주시 오랑우탄면사무소 제주공항점" class="map-link" target="_blank">카카오맵</a>
-        <a href="https://www.google.com/maps/search/?api=1&query=제주시 오랑우탄면사무소 제주공항점" class="map-link" target="_blank">Google Maps</a>
-      </div>
-    </div>
-    <!-- 6 -->
-    <div class="container">
-      <h2>잉가이</h2>
-      <p>(제주시 무근성 7길 1)</p>
-      <p></p>
-      <div class="map-links">
-        <a href="https://map.naver.com/?query=제주시 잉가이" class="map-link" target="_blank">네이버지도</a>
-        <a href="https://map.kakao.com/?q=제주시 잉가이" class="map-link" target="_blank">카카오맵</a>
-        <a href="https://www.google.com/maps/search/?api=1&query=제주시 잉가이" class="map-link" target="_blank">Google Maps</a>
-      </div>
-    </div>
-    <!-- 7 -->
-    <div class="container">
-      <h2>올리다버거</h2>
-      <p>(제주시 남성로 154-6)</p>
-      <p></p>
-      <div class="map-links">
-        <a href="https://map.naver.com/?query=제주시 올리다버거" class="map-link" target="_blank">네이버지도</a>
-        <a href="https://map.kakao.com/?q=제주시 올리다버거" class="map-link" target="_blank">카카오맵</a>
-        <a href="https://www.google.com/maps/search/?api=1&query=제주시 올리다버거" class="map-link" target="_blank">Google Maps</a>
-      </div>
-    </div>
-    <!-- 8 -->
-    <div class="container">
-      <h2>비꼴로</h2>
-      <p>(제주시 중앙로22길 10)</p>
-      <p></p>
-      <div class="map-links">
-        <a href="https://map.naver.com/?query=제주시 비꼴로" class="map-link" target="_blank">네이버지도</a>
-        <a href="https://map.kakao.com/?q=제주시 비꼴로" class="map-link" target="_blank">카카오맵</a>
-        <a href="https://www.google.com/maps/search/?api=1&query=제주시 비꼴로" class="map-link" target="_blank">Google Maps</a>
-      </div>
-    </div>
-    <!-- 9 -->
-    <div class="container">
-      <h2>초리</h2>
-      <p>(제주시 남성로25길 4-2)</p>
-      <p></p>
-      <div class="map-links">
-        <a href="https://map.naver.com/?query=제주시 초리" class="map-link" target="_blank">네이버지도</a>
-        <a href="https://map.kakao.com/?q=제주시 초리" class="map-link" target="_blank">카카오맵</a>
-        <a href="https://www.google.com/maps/search/?api=1&query=제주시 초리" class="map-link" target="_blank">Google Maps</a>
-      </div>
-    </div>
-    <!-- 10 -->
-    <div class="container">
-      <h2>미친부엌 제주본점</h2>
-      <p>(제주시 탑동로 15)</p>
-      <p></p>
-      <div class="map-links">
-        <a href="https://map.naver.com/?query=제주시 미친부엌 제주본점" class="map-link" target="_blank">네이버지도</a>
-        <a href="https://map.kakao.com/?q=제주시 미친부엌 제주본점" class="map-link" target="_blank">카카오맵</a>
-        <a href="https://www.google.com/maps/search/?api=1&query=제주시 미친부엌 제주본점" class="map-link" target="_blank">Google Maps</a>
-      </div>
-    </div>
-  </div>
-  <!-- 🍞 빵지순례(빵집) - waiting -->
-  <div id="waiting" class="grid-container">
-    <!-- 1 -->
-    <div class="container">
-      <h2>콜롱주</h2>
-      <p>(제주시 중앙로2길 27 1층)</p>
-      <p></p>
-      <div class="map-links">
-        <a href="https://map.naver.com/?query=제주시 콜롱주" class="map-link" target="_blank">네이버지도</a>
-        <a href="https://map.kakao.com/?q=제주시 콜롱주" class="map-link" target="_blank">카카오맵</a>
-        <a href="https://www.google.com/maps/search/?api=1&query=제주시 콜롱주" class="map-link" target="_blank">Google Maps</a>
-      </div>
-    </div>
-    <!-- 2 -->
-    <div class="container">
-      <h2>베터플랫</h2>
-      <p>(탑동해안로74 1층)</p>
-      <p></p>
-      <div class="map-links">
-        <a href="https://map.naver.com/?query=제주시 베터플랫" class="map-link" target="_blank">네이버지도</a>
-        <a href="https://map.kakao.com/?q=제주시 베터플랫" class="map-link" target="_blank">카카오맵</a>
-        <a href="https://www.google.com/maps/search/?api=1&query=제주시 베터플랫" class="map-link" target="_blank">Google Maps</a>
-      </div>
-    </div>
-    <!-- 3 -->
-    <div class="container">
-      <h2>ABC에이팩토리베어커리카페</h2>
-      <p>(제주시 탑동로 11)</p>
-      <p></p>
-      <div class="map-links">
-        <a href="https://map.naver.com/?query=제주시 ABC에이팩토리베어커리카페" class="map-link" target="_blank">네이버지도</a>
-        <a href="https://map.kakao.com/?q=제주시 ABC에이팩토리베어커리카페" class="map-link" target="_blank">카카오맵</a>
-        <a href="https://www.google.com/maps/search/?api=1&query=제주시 ABC에이팩토리베어커리카페" class="map-link" target="_blank">Google Maps</a>
-      </div>
-    </div>
-    <!-- 4 -->
-    <div class="container">
-      <h2>레이어스베이크하우스</h2>
-      <p>(제주시 무근성7길 25 1층)</p>
-      <p></p>
-      <div class="map-links">
-        <a href="https://map.naver.com/?query=제주시 레이어스베이크하우스" class="map-link" target="_blank">네이버지도</a>
-        <a href="https://map.kakao.com/?q=제주시 레이어스베이크하우스" class="map-link" target="_blank">카카오맵</a>
-        <a href="https://www.google.com/maps/search/?api=1&query=제주시 레이어스베이크하우스" class="map-link" target="_blank">Google Maps</a>
-      </div>
-    </div>
-    <!-- 5 -->
-    <div class="container">
-      <h2>베오크</h2>
-      <p>(제주시 탑동로 141-2)</p>
-      <p></p>
-      <div class="map-links">
-        <a href="https://map.naver.com/?query=제주시 베오크" class="map-link" target="_blank">네이버지도</a>
-        <a href="https://map.kakao.com/?q=제주시 베오크" class="map-link" target="_blank">카카오맵</a>
-        <a href="https://www.google.com/maps/search/?api=1&query=제주시 베오크" class="map-link" target="_blank">Google Maps</a>
-      </div>
-    </div>
-    <!-- 6 -->
-    <div class="container">
-      <h2>레드와칠리페퍼스</h2>
-      <p>(제주시 서사로 11길 18)</p>
-      <p></p>
-      <div class="map-links">
-        <a href="https://map.naver.com/?query=제주시 레드와칠리페퍼스" class="map-link" target="_blank">네이버지도</a>
-        <a href="https://map.kakao.com/?q=제주시 레드와칠리페퍼스" class="map-link" target="_blank">카카오맵</a>
-        <a href="https://www.google.com/maps/search/?api=1&query=제주시 레드와칠리페퍼스" class="map-link" target="_blank">Google Maps</a>
-      </div>
-    </div>
-    <!-- 7 -->
-    <div class="container">
-      <h2>종스브레드</h2>
-      <p>(제주시 중앙로 128-1)</p>
-      <p></p>
-      <div class="map-links">
-        <a href="https://map.naver.com/?query=제주시 종스브레드" class="map-link" target="_blank">네이버지도</a>
-        <a href="https://map.kakao.com/?q=제주시 종스브레드" class="map-link" target="_blank">카카오맵</a>
-        <a href="https://www.google.com/maps/search/?api=1&query=제주시 종스브레드" class="map-link" target="_blank">Google Maps</a>
-      </div>
-    </div>
-    <!-- 8 -->
-    <div class="container">
-      <h2>시나브로</h2>
-      <p>(제주시 남성로 157 1층)</p>
-      <p></p>
-      <div class="map-links">
-        <a href="https://map.naver.com/?query=제주시 시나브로" class="map-link" target="_blank">네이버지도</a>
-        <a href="https://map.kakao.com/?q=제주시 시나브로" class="map-link" target="_blank">카카오맵</a>
-        <a href="https://www.google.com/maps/search/?api=1&query=제주시 시나브로" class="map-link" target="_blank">Google Maps</a>
-      </div>
-    </div>
-    <!-- 9 -->
-    <div class="container">
-      <h2>원더 샌드위치&김밥</h2>
-      <p>(제주시 전농로 109 1층)</p>
-      <p></p>
-      <div class="map-links">
-        <a href="https://map.naver.com/?query=제주시 원더 샌드위치&김밥" class="map-link" target="_blank">네이버지도</a>
-        <a href="https://map.kakao.com/?q=제주시 원더 샌드위치&김밥" class="map-link" target="_blank">카카오맵</a>
-        <a href="https://www.google.com/maps/search/?api=1&query=제주시 원더 샌드위치&김밥" class="map-link" target="_blank">Google Maps</a>
-      </div>
-    </div>
-    <!-- 10 -->
-    <div class="container">
-      <h2>무근성양과점</h2>
-      <p>(제주시 중앙로8길 33)</p>
-      <p></p>
-      <div class="map-links">
-        <a href="https://map.naver.com/?query=제주시 무근성양과점" class="map-link" target="_blank">네이버지도</a>
-        <a href="https://map.kakao.com/?q=제주시 무근성양과점" class="map-link" target="_blank">카카오맵</a>
-        <a href="https://www.google.com/maps/search/?api=1&query=제주시 무근성양과점" class="map-link" target="_blank">Google Maps</a>
-      </div>
-    </div>
-  </div>
-  <!-- ☕ 감성한모금(카페) - cafe -->
-  <div id="cafe" class="grid-container">
-    <!-- 1 -->
-    <div class="container">
-      <h2>카페아네스</h2>
-      <p>(제주시 무근성길 1 1층)</p>
-      <p></p>
-      <div class="map-links">
-        <a href="https://map.naver.com/?query=제주시 카페아네스" class="map-link" target="_blank">네이버지도</a>
-        <a href="https://map.kakao.com/?q=제주시 카페아네스" class="map-link" target="_blank">카카오맵</a>
-        <a href="https://www.google.com/maps/search/?api=1&query=제주시 카페아네스" class="map-link" target="_blank">Google Maps</a>
-      </div>
-    </div>
-    <!-- 2 -->
-    <div class="container">
-      <h2>베이크앤브루</h2>
-      <p>(제주시 탑동로 105 1층)</p>
-      <p></p>
-      <div class="map-links">
-        <a href="https://map.naver.com/?query=제주시 베이크앤브루" class="map-link" target="_blank">네이버지도</a>
-        <a href="https://map.kakao.com/?q=제주시 베이크앤브루" class="map-link" target="_blank">카카오맵</a>
-        <a href="https://www.google.com/maps/search/?api=1&query=제주시 베이크앤브루" class="map-link" target="_blank">Google Maps</a>
-      </div>
-    </div>
-    <!-- 3 -->
-    <div class="container">
-      <h2>고미미</h2>
-      <p>(제주시 북성로 67 1층)</p>
-      <p></p>
-      <div class="map-links">
-        <a href="https://map.naver.com/?query=제주시 고미미" class="map-link" target="_blank">네이버지도</a>
-        <a href="https://map.kakao.com/?q=제주시 고미미" class="map-link" target="_blank">카카오맵</a>
-        <a href="https://www.google.com/maps/search/?api=1&query=제주시 고미미" class="map-link" target="_blank">Google Maps</a>
-      </div>
-    </div>
-    <!-- 4 -->
-    <div class="container">
-      <h2>아쿠포</h2>
-      <p>(제주시 북성로 57 1층)</p>
-      <p></p>
-      <div class="map-links">
-        <a href="https://map.naver.com/?query=제주시 아쿠포" class="map-link" target="_blank">네이버지도</a>
-        <a href="https://map.kakao.com/?q=제주시 아쿠포" class="map-link" target="_blank">카카오맵</a>
-        <a href="https://www.google.com/maps/search/?api=1&query=제주시 아쿠포" class="map-link" target="_blank">Google Maps</a>
-      </div>
-    </div>
-    <!-- 5 -->
-    <div class="container">
-      <h2>카페송키&탑동회관</h2>
-      <p>(제주시 무근성안길 16 1층)</p>
-      <p></p>
-      <div class="map-links">
-        <a href="https://map.naver.com/?query=제주시 카페송키&탑동회관" class="map-link" target="_blank">네이버지도</a>
-        <a href="https://map.kakao.com/?q=제주시 카페송키&탑동회관" class="map-link" target="_blank">카카오맵</a>
-        <a href="https://www.google.com/maps/search/?api=1&query=제주시 카페송키&탑동회관" class="map-link" target="_blank">Google Maps</a>
-      </div>
-    </div>
-    <!-- 6 -->
-    <div class="container">
-      <h2>아그당</h2>
-      <p>(제주시 탑동로3길 10 1층)</p>
-      <p></p>
-      <div class="map-links">
-        <a href="https://map.naver.com/?query=제주시 아그당" class="map-link" target="_blank">네이버지도</a>
-        <a href="https://map.kakao.com/?q=제주시 아그당" class="map-link" target="_blank">카카오맵</a>
-        <a href="https://www.google.com/maps/search/?api=1&query=제주시 아그당" class="map-link" target="_blank">Google Maps</a>
-      </div>
-    </div>
-    <!-- 7 -->
-    <div class="container">
-      <h2>헬로효주</h2>
-      <p>(제주시 관덕로 10 1층)</p>
-      <p></p>
-      <div class="map-links">
-        <a href="https://map.naver.com/?query=제주시 헬로효주" class="map-link" target="_blank">네이버지도</a>
-        <a href="https://map.kakao.com/?q=제주시 헬로효주" class="map-link" target="_blank">카카오맵</a>
-        <a href="https://www.google.com/maps/search/?api=1&query=제주시 헬로효주" class="map-link" target="_blank">Google Maps</a>
-      </div>
-    </div>
-    <!-- 8 -->
-    <div class="container">
-      <h2>어반브루잉</h2>
-      <p>(제주시 관덕로 16-1)</p>
-      <p></p>
-      <div class="map-links">
-        <a href="https://map.naver.com/?query=제주시 어반브루잉" class="map-link" target="_blank">네이버지도</a>
-        <a href="https://map.kakao.com/?q=제주시 어반브루잉" class="map-link" target="_blank">카카오맵</a>
-        <a href="https://www.google.com/maps/search/?api=1&query=제주시 어반브루잉" class="map-link" target="_blank">Google Maps</a>
-      </div>
-    </div>
-    <!-- 9 -->
-    <div class="container">
-      <h2>무슈부부커피스탠드 관덕정</h2>
-      <p>(제주시 관덕로 22 1층)</p>
-      <p></p>
-      <div class="map-links">
-        <a href="https://map.naver.com/?query=제주시 무슈부부커피스탠드 관덕정" class="map-link" target="_blank">네이버지도</a>
-        <a href="https://map.kakao.com/?q=제주시 무슈부부커피스탠드 관덕정" class="map-link" target="_blank">카카오맵</a>
-        <a href="https://www.google.com/maps/search/?api=1&query=제주시 무슈부부커피스탠드 관덕정" class="map-link" target="_blank">Google Maps</a>
-      </div>
-    </div>
-    <!-- 10 -->
-    <div class="container">
-      <h2>카페단단</h2>
-      <p>(제주시 관덕로4길 1-6 1층)</p>
-      <p></p>
-      <div class="map-links">
-        <a href="https://map.naver.com/?query=제주시 카페단단" class="map-link" target="_blank">네이버지도</a>
-        <a href="https://map.kakao.com/?q=제주시 카페단단" class="map-link" target="_blank">카카오맵</a>
-        <a href="https://www.google.com/maps/search/?api=1&query=제주시 카페단단" class="map-link" target="_blank">Google Maps</a>
-      </div>
-    </div>
-  </div>
+
   <script>
-    // 전역 변수로 현재 카테고리와 제목을 저장 (모바일 지도 앱 관련)
-    var currentCategory = 'lunch';
-    var currentTitle = '🍚 한식 맛집 추천';
-    function showCategory(category, titleText) {
-      currentCategory = category;
-      currentTitle = titleText;
-      document.querySelectorAll('.grid-container').forEach(div => div.style.display = 'none');
-      const categoryContainer = document.getElementById(category);
-      if (categoryContainer) {
-        let items = Array.from(categoryContainer.children);
-        items.sort(() => Math.random() - 0.5); // 순서 랜덤 변경
-        items.forEach(item => categoryContainer.appendChild(item)); // 새로운 순서로 추가
-        categoryContainer.style.display = 'grid';
-        document.getElementById('category-title').textContent = titleText + " (10곳)";
+    // ===== 데이터(유지보수 편하게 JS로 관리) =====
+    const DATA = {
+      lunch: [
+        { name: "한라돈까스", address: "제주시 탑동로 27" },
+        { name: "미친부엌 바이 제주면소", address: "제주시 중앙로2길 41" },
+        { name: "말고기연구소", address: "제주시 북성로 43" },
+        { name: "우도근고기", address: "제주시 북성로 28" },
+        { name: "숲제주", address: "제주시 무근성3길 9" },
+        { name: "20년전통부대찌개", address: "제주시 중앙로14길 35" },
+        { name: "제주에가면", address: "제주시 탑동로 119" },
+        { name: "진이칼국수", address: "제주시 남성로 154" },
+        { name: "남문숯불바베큐&치킨 본점", address: "제주시 중앙로 118-1" },
+        { name: "모던그릴", address: "제주시 전농로 73-1" },
+      ],
+      dinner: [
+        { name: "스타메노 스키야키", address: "제주시 무근성7길 17" },
+        { name: "단도리", address: "제주시 전농로 77 1층" },
+        { name: "파라디소", address: "제주시 전농로 75-1 2층" },
+        { name: "산전수전", address: "제주시 중앙로24길 20" },
+        { name: "타인의취향", address: "제주시 관덕로 16-1" },
+        { name: "태양상회", address: "제주시 중앙로2길 31 1층" },
+        { name: "뽀빠이", address: "제주시 북성로 4" },
+        { name: "자유의지2 제주혼술바", address: "제주시 중앙로8길 9 1층" },
+        { name: "부가네얼큰이 본점", address: "제주시 관덕로 15 1층" },
+        { name: "AMU아무", address: "제주시 남성로 160" },
+      ],
+      dessert: [
+        { name: "아살람레스토랑", address: "제주시 중앙로2길 7" },
+        { name: "김원꼬치점", address: "제주시 중앙로2길 7" },
+        { name: "도토리키친 본점", address: "제주시 북성로 59 1층" },
+        { name: "유메", address: "제주시 무근성7길 23" },
+        { name: "오랑우탄면사무소 제주공항점", address: "제주시 관덕로6길 12" },
+        { name: "잉가이", address: "제주시 무근성7길 1" },
+        { name: "올리다버거", address: "제주시 남성로 154-6" },
+        { name: "비꼴로", address: "제주시 중앙로22길 10" },
+        { name: "초리", address: "제주시 남성로25길 4-2" },
+        { name: "미친부엌 제주본점", address: "제주시 탑동로 15" },
+      ],
+      waiting: [
+        { name: "콜롱주", address: "제주시 중앙로2길 27 1층" },
+        { name: "베터플랫", address: "탑동해안로74 1층" },
+        { name: "ABC에이팩토리베어커리카페", address: "제주시 탑동로 11" },
+        { name: "레이어스베이크하우스", address: "제주시 무근성7길 25 1층" },
+        { name: "베오크", address: "제주시 탑동로 141-2" },
+        { name: "레드와칠리페퍼스", address: "제주시 서사로11길 18" },
+        { name: "종스브레드", address: "제주시 중앙로 128-1" },
+        { name: "시나브로", address: "제주시 남성로 157 1층" },
+        { name: "원더 샌드위치&김밥", address: "제주시 전농로 109 1층" },
+        { name: "무근성양과점", address: "제주시 중앙로8길 33" },
+      ],
+      cafe: [
+        { name: "카페아네스", address: "제주시 무근성길 1 1층" },
+        { name: "베이크앤브루", address: "제주시 탑동로 105 1층" },
+        { name: "고미미", address: "제주시 북성로 67 1층" },
+        { name: "아쿠포", address: "제주시 북성로 57 1층" },
+        { name: "카페송키&탑동회관", address: "제주시 무근성안길 16 1층" },
+        { name: "아그당", address: "제주시 탑동로3길 10 1층" },
+        { name: "헬로효주", address: "제주시 관덕로 10 1층" },
+        { name: "어반브루잉", address: "제주시 관덕로 16-1" },
+        { name: "무슈부부커피스탠드 관덕정", address: "제주시 관덕로 22 1층" },
+        { name: "카페단단", address: "제주시 관덕로4길 1-6 1층" },
+      ],
+    };
+
+    const CATEGORY_TITLES = {
+      lunch: "🍚 한식 맛집 추천",
+      dinner: "🍺 술집 맛집 추천",
+      dessert: "🌍 외국음식 맛집 추천",
+      waiting: "🍞 빵집 맛집 추천",
+      cafe: "☕ 카페 맛집 추천",
+    };
+
+    const state = {
+      currentCategory: "lunch",
+      currentTitle: CATEGORY_TITLES.lunch,
+      lastPickedId: null,
+    };
+
+    // ===== 유틸 =====
+    function encodeQ(q){ return encodeURIComponent(q); }
+
+    function fisherYatesShuffle(arr){
+      for (let i = arr.length - 1; i > 0; i--) {
+        const j = Math.floor(Math.random() * (i + 1));
+        [arr[i], arr[j]] = [arr[j], arr[i]];
       }
     }
-    window.onload = function() {
-      showCategory('lunch', '🍚 한식 맛집 추천'); // 기본값을 "밥심"으로 설정
-    };
-    // 모바일에서 네이버지도 링크 클릭 시 네이버맵 앱 실행 후, 앱으로 돌아왔을 때 현재 카테고리 유지
-    document.addEventListener('DOMContentLoaded', function(){
-       var naverLinks = document.querySelectorAll('a[href^="https://map.naver.com/"]');
-       naverLinks.forEach(function(link) {
-           link.addEventListener('click', function(e) {
-               if (/Android|iPhone|iPad|iPod/i.test(navigator.userAgent)) {
-                   e.preventDefault();
-                   var url = new URL(link.href);
-                   var query = url.searchParams.get('query') || '';
-                   
-                   var hasBlurred = false;
-                   var fallbackTimeout;
-                   // 사용자가 앱으로 전환되었음을 감지
-                   window.onblur = function() {
-                      hasBlurred = true;
-                      clearTimeout(fallbackTimeout);
-                   };
-                   // 앱에서 돌아왔을 때 현재 카테고리 재출력
-                   window.onfocus = function() {
-                      if (hasBlurred) {
-                         showCategory(currentCategory, currentTitle);
-                      }
-                      window.onblur = null;
-                      window.onfocus = null;
-                   };
-                   // fallback: 1.5초 후에도 blur가 발생하지 않으면 모바일웹 네이버지도로 이동
-                   fallbackTimeout = setTimeout(function(){
-                       if (!hasBlurred) {
-                           window.location.href = 'https://m.map.naver.com/search2/search.naver?query=' + encodeURIComponent(query);
-                       }
-                   }, 1500);
-                   // 네이버맵 앱 실행 시도
-                   window.location.href = 'nmap://search?query=' + encodeURIComponent(query);
-               }
-           });
-       });
+
+    function makeId(category, index){
+      return `${category}-${index}`;
+    }
+
+    function getQueryText(place){
+      // 기존처럼 "제주시 + 가게명" 형태를 기본으로
+      // (주소가 제주시가 아닌 문자열이 있어도 검색은 대부분 잘 됨)
+      return `제주시 ${place.name}`;
+    }
+
+    function getMapUrls(queryText){
+      const q = encodeQ(queryText);
+      return {
+        naver: `https://map.naver.com/?query=${q}`,
+        kakao: `https://map.kakao.com/?q=${q}`,
+        google: `https://www.google.com/maps/search/?api=1&query=${q}`,
+      };
+    }
+
+    // ===== 렌더링 =====
+    function renderAll(){
+      Object.keys(DATA).forEach(category => {
+        const grid = document.getElementById(category);
+        grid.innerHTML = "";
+
+        DATA[category].forEach((place, idx) => {
+          const id = makeId(category, idx);
+          const queryText = getQueryText(place);
+          const urls = getMapUrls(queryText);
+
+          const card = document.createElement("div");
+          card.className = "container";
+          card.id = id;
+          card.dataset.category = category;
+          card.dataset.name = place.name;
+          card.dataset.address = place.address;
+          card.dataset.query = queryText;
+
+          card.innerHTML = `
+            <div class="thumb" aria-hidden="true">🍽️</div>
+            <h2>${place.name}</h2>
+            <p>(${place.address})</p>
+            <div class="map-links">
+              <a href="${urls.naver}" class="map-link map-naver" target="_blank" rel="noopener noreferrer">네이버지도</a>
+              <a href="${urls.kakao}" class="map-link" target="_blank" rel="noopener noreferrer">카카오맵</a>
+              <a href="${urls.google}" class="map-link" target="_blank" rel="noopener noreferrer">Google Maps</a>
+            </div>
+          `;
+
+          grid.appendChild(card);
+        });
+      });
+    }
+
+    function updateTitle(){
+      const count = (DATA[state.currentCategory] || []).length;
+      document.getElementById("category-title").textContent = `${state.currentTitle} (${count}곳)`;
+    }
+
+    function setActiveNav(){
+      document.querySelectorAll(".nav-menu button").forEach(btn => {
+        btn.classList.toggle("active", btn.dataset.category === state.currentCategory);
+      });
+    }
+
+    function clearPicked(){
+      document.querySelectorAll(".container.picked").forEach(el => el.classList.remove("picked"));
+    }
+
+    function reapplyPickedIfAny(){
+      if (!state.lastPickedId) return;
+      const el = document.getElementById(state.lastPickedId);
+      if (el && !el.classList.contains("picked")) el.classList.add("picked");
+    }
+
+    function showCategory(category, titleText){
+      state.currentCategory = category;
+      state.currentTitle = titleText;
+
+      // 모든 grid 숨김
+      document.querySelectorAll(".grid-container").forEach(div => div.hidden = true);
+
+      const grid = document.getElementById(category);
+      if (!grid) return;
+
+      // DOM 노드 셔플(편향 없는 방식)
+      const items = Array.from(grid.children);
+      fisherYatesShuffle(items);
+      items.forEach(item => grid.appendChild(item));
+
+      // 선택한 카테고리 표시
+      grid.hidden = false;
+
+      updateTitle();
+      setActiveNav();
+
+      // 지도 앱 갔다가 돌아왔을 때도 픽 유지
+      clearPicked();
+      reapplyPickedIfAny();
+    }
+
+    // ===== 랜덤 1곳 뽑기(연계: 모달 + 카드 강조 + 스크롤) =====
+    function pickRandomOne(){
+      const list = DATA[state.currentCategory] || [];
+      if (!list.length) return;
+
+      const idx = Math.floor(Math.random() * list.length);
+      const id = makeId(state.currentCategory, idx);
+      const place = list[idx];
+
+      // 카테고리 보이는 상태 보장(이미 보이지만, 안전하게)
+      showCategory(state.currentCategory, state.currentTitle);
+
+      // 카드 강조 + 스크롤 이동
+      clearPicked();
+      state.lastPickedId = id;
+
+      const card = document.getElementById(id);
+      if (card) {
+        card.classList.add("picked");
+        card.scrollIntoView({ behavior: "smooth", block: "center" });
+      }
+
+      // 모달 열기(지도 링크도 연계)
+      openModal(place, id);
+    }
+
+    // ===== 모달 =====
+    const modalBackdrop = document.getElementById("modalBackdrop");
+    const modalCloseBtn = document.getElementById("modalClose");
+
+    function openModal(place, cardId){
+      const queryText = getQueryText(place);
+      const urls = getMapUrls(queryText);
+
+      document.getElementById("modalPlaceName").textContent = place.name;
+      document.getElementById("modalPlaceAddr").textContent = `(${place.address})`;
+
+      const actions = document.getElementById("modalActions");
+      actions.innerHTML = `
+        <a href="${urls.naver}" class="map-naver" target="_blank" rel="noopener noreferrer">네이버지도</a>
+        <a href="${urls.kakao}" target="_blank" rel="noopener noreferrer">카카오맵</a>
+        <a href="${urls.google}" target="_blank" rel="noopener noreferrer">Google Maps</a>
+        <button type="button" data-scroll="${cardId}">카드로 이동</button>
+      `;
+
+      modalBackdrop.classList.add("show");
+
+      // 포커스 접근성(닫기 버튼으로 포커스)
+      modalCloseBtn.focus();
+    }
+
+    function closeModal(){
+      modalBackdrop.classList.remove("show");
+    }
+
+    // 모달 닫기: X / 바깥 클릭 / ESC
+    modalCloseBtn.addEventListener("click", closeModal);
+    modalBackdrop.addEventListener("click", (e) => {
+      if (e.target === modalBackdrop) closeModal();
+    });
+    document.addEventListener("keydown", (e) => {
+      if (e.key === "Escape" && modalBackdrop.classList.contains("show")) closeModal();
+    });
+
+    // 모달 내부 "카드로 이동"
+    document.getElementById("modalActions").addEventListener("click", (e) => {
+      const btn = e.target.closest("button[data-scroll]");
+      if (!btn) return;
+      const id = btn.dataset.scroll;
+      closeModal();
+      const el = document.getElementById(id);
+      if (el) el.scrollIntoView({ behavior:"smooth", block:"center" });
+    });
+
+    // ===== 모바일 네이버 지도 딥링크(앱 열기 + 복귀 시 카테고리 유지) =====
+    document.body.addEventListener("click", (e) => {
+      const a = e.target.closest("a.map-naver");
+      if (!a) return;
+
+      const isMobile = /Android|iPhone|iPad|iPod/i.test(navigator.userAgent);
+      if (!isMobile) return;
+
+      // 모바일일 때만 딥링크 시도
+      e.preventDefault();
+
+      const url = new URL(a.href);
+      const query = url.searchParams.get("query") || ""; // 이미 인코딩된 형태
+
+      let hasBlurred = false;
+
+      const fallbackTimeout = setTimeout(() => {
+        if (!hasBlurred) {
+          // 앱 실행 실패 시 모바일웹 네이버지도
+          window.location.href = "https://m.map.naver.com/search2/search.naver?query=" + query;
+        }
+      }, 1500);
+
+      const onBlur = () => {
+        hasBlurred = true;
+        clearTimeout(fallbackTimeout);
+      };
+
+      const onFocus = () => {
+        // 앱에서 돌아오면 현재 카테고리 다시 보여주고, 픽 유지
+        if (hasBlurred) {
+          showCategory(state.currentCategory, state.currentTitle);
+        }
+        window.removeEventListener("blur", onBlur);
+        window.removeEventListener("focus", onFocus);
+      };
+
+      window.addEventListener("blur", onBlur, { once: true });
+      window.addEventListener("focus", onFocus, { once: true });
+
+      // 네이버맵 앱 실행 시도
+      window.location.href = "nmap://search?query=" + query;
+    });
+
+    // ===== 이벤트 바인딩 =====
+    document.querySelector(".nav-menu").addEventListener("click", (e) => {
+      const btn = e.target.closest("button[data-category]");
+      if (!btn) return;
+      showCategory(btn.dataset.category, btn.dataset.title);
+    });
+
+    document.getElementById("randomPickBtn").addEventListener("click", pickRandomOne);
+
+    // ===== 초기 실행 =====
+    document.addEventListener("DOMContentLoaded", () => {
+      renderAll();
+      showCategory("lunch", CATEGORY_TITLES.lunch);
     });
   </script>
 </body>
